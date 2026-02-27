@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ru" style="background:#0a0a0a">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>Полуавтоматический блог: как я веду сайт, не открывая редактор — Лев Ом</title>
+  <meta name="description" content="Я нашёл способ вести блог, где AI берёт на себя рутину, а я остаюсь автором. Рассказываю принципы, которые за этим стоят.">
+  <script>
+    (function(){
+      if(localStorage.getItem('theme')==='light'){
+        document.documentElement.classList.add('light');
+        document.documentElement.style.background='#3a3a36';
+      }
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: 'var(--c-bg)',
+            card: 'var(--c-card)',
+            border: 'var(--c-border)',
+            accent: 'var(--c-accent)',
+            txt: 'var(--c-txt)',
+            muted: 'var(--c-muted)',
+          },
+          fontFamily: {
+            heading: ['Unbounded', 'sans-serif'],
+            body: ['Manrope', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta property="og:title" content="Полуавтоматический блог: как я веду сайт, не открывая редактор">
+  <meta property="og:description" content="Я нашёл способ вести блог, где AI берёт на себя рутину, а я остаюсь автором. Рассказываю принципы, которые за этим стоят.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://lev.omlab.club/blog/poluavtomaticheskiy-blog.html">
+  <meta property="article:published_time" content="2026-02-27">
+  <meta property="article:author" content="Лев Ом">
+  <link rel="canonical" href="https://lev.omlab.club/blog/poluavtomaticheskiy-blog.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Полуавтоматический блог: как я веду сайт, не открывая редактор","description":"Я нашёл способ вести блог, где AI берёт на себя рутину, а я остаюсь автором. Рассказываю принципы, которые за этим стоят.","author":{"@type":"Person","name":"Лев Ом","jobTitle":"AI-автоматизация маркетинга","url":"https://lev.omlab.club"},"datePublished":"2026-02-27","mainEntityOfPage":"https://lev.omlab.club/blog/poluavtomaticheskiy-blog.html"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Это не обман читателей, если текст генерирует AI?","acceptedAnswer":{"@type":"Answer","text":"Нет. AI помогает с черновиком, как калькулятор помогает с расчётами. Финальный текст прошёл через меня: я выбрал тему, проверил факты, убрал лишнее, добавил свой опыт. Авторство определяется не тем, кто набирал буквы, а тем, чьи мысли и решения стоят за текстом."}},{"@type":"Question","name":"Сколько времени занимает одна статья?","acceptedAnswer":{"@type":"Answer","text":"От идеи до публикации: 15-30 минут. Из них мои активные действия: сформулировать тему (пара предложений), прочитать и поправить черновик (5-10 минут). Раньше статья занимала 2-3 часа чистого времени."}},{"@type":"Question","name":"Можно так настроить для своего блога?","acceptedAnswer":{"@type":"Answer","text":"Можно. Принципы универсальные: текст как файл, конвейер из этапов, правила стиля, автоматический деплой. Конкретная реализация зависит от ваших инструментов и предпочтений."}}]}</script>
+  <style>
+    :root {
+      --c-bg: #0a0a0a;
+      --c-txt: #e5e5e5;
+      --c-card: rgba(255, 255, 255, 0.06);
+      --c-border: rgba(255, 255, 255, 0.1);
+      --c-muted: #8a8a8a;
+      --c-accent: #c8ff00;
+      --c-accent-rgb: 200, 255, 0;
+      --c-accent-glow: rgba(200, 255, 0, 0.3);
+      --c-accent-btn-text: #0a0a0a;
+      --c-watermark: rgba(200, 255, 0, 0.06);
+      --c-watermark-hover: rgba(200, 255, 0, 0.12);
+      --c-shadow: rgba(0, 0, 0, 0.2);
+      --c-shadow-hover: rgba(0, 0, 0, 0.35);
+    }
+    html.light {
+      --c-bg: #3a3a36;
+      --c-txt: #e0e0dc;
+      --c-card: rgba(255, 255, 255, 0.10);
+      --c-border: rgba(255, 255, 255, 0.14);
+      --c-muted: #b0b0aa;
+      --c-accent: #c8ff00;
+      --c-accent-rgb: 200, 255, 0;
+      --c-accent-glow: rgba(200, 255, 0, 0.3);
+      --c-accent-btn-text: #0a0a0a;
+      --c-watermark: rgba(200, 255, 0, 0.06);
+      --c-watermark-hover: rgba(200, 255, 0, 0.12);
+      --c-shadow: rgba(0, 0, 0, 0.3);
+      --c-shadow-hover: rgba(0, 0, 0, 0.45);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--c-bg);
+      color: var(--c-txt);
+      overflow-x: hidden;
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    .theme-transition,
+    nav, footer, .card-hover, .btn-accent, .btn-outline,
+    .sticky-cta, section {
+      transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+    }
+
+    .grain::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .accent-line::before {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: var(--c-accent);
+      margin-bottom: 16px;
+    }
+
+    .card-hover {
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 4px 24px var(--c-shadow);
+      transition: border-color 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.4s ease, box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .card-hover:hover {
+      border-color: var(--c-accent);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px var(--c-shadow-hover);
+    }
+
+    .btn-accent {
+      color: var(--c-accent-btn-text);
+      transition: box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.4s ease, color 0.4s ease;
+    }
+    .btn-accent:hover {
+      box-shadow: 0 0 40px var(--c-accent-glow);
+      transform: translateY(-2px);
+    }
+    .btn-accent:active {
+      transform: translateY(0) scale(0.97);
+    }
+
+    .btn-outline {
+      transition: border-color 0.3s ease, color 0.3s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .btn-outline:hover {
+      border-color: var(--c-accent);
+      color: var(--c-accent);
+      transform: translateY(-2px);
+    }
+
+    .nav-blur {
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+    }
+
+    .stat-value {
+      font-family: 'Unbounded', sans-serif;
+    }
+
+    /* Mobile menu */
+    .mobile-menu {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      z-index: 49;
+      background: var(--c-card);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 1px solid var(--c-border);
+      box-shadow: 0 8px 32px var(--c-shadow);
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      transform: translateY(-100%);
+      opacity: 0;
+      visibility: hidden;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .mobile-menu.open {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+    .menu-icon-line {
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+      transform-origin: center;
+    }
+    .menu-open .menu-icon-line:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+    .menu-open .menu-icon-line:nth-child(2) {
+      opacity: 0;
+    }
+    .menu-open .menu-icon-line:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    .theme-toggle {
+      position: relative;
+      width: 56px;
+      height: 28px;
+      background: var(--c-card);
+      border: 1px solid var(--c-border);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover {
+      border-color: var(--c-accent);
+    }
+    .theme-toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: var(--c-accent);
+      border-radius: 50%;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    html.light .theme-toggle-thumb {
+      transform: translateX(28px);
+    }
+    .theme-toggle-icon {
+      width: 12px;
+      height: 12px;
+      fill: var(--c-accent-btn-text);
+      transition: fill 0.3s ease;
+    }
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+    html.light .theme-toggle .icon-sun { display: block; }
+    html.light .theme-toggle .icon-moon { display: none; }
+
+    /* Prose styles for blog articles */
+    .prose > *:first-child { margin-top: 0; }
+
+    .prose h2 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-top: 2rem;
+      margin-bottom: 1.25rem;
+      color: var(--c-txt);
+    }
+    .prose h2::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 3px;
+      background: var(--c-accent);
+      margin-bottom: 1rem;
+      border-radius: 2px;
+    }
+    .prose h3 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      color: var(--c-txt);
+    }
+    .prose p {
+      margin-bottom: 1.25rem;
+      line-height: 1.8;
+      color: var(--c-muted);
+    }
+    .prose > p:first-child {
+      font-size: 1.1rem;
+      line-height: 1.75;
+      color: var(--c-txt);
+      opacity: 0.85;
+    }
+    .prose strong {
+      color: var(--c-txt);
+      font-weight: 600;
+    }
+    .prose a {
+      color: var(--c-accent);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      transition: opacity 0.2s ease;
+    }
+    .prose a:hover {
+      opacity: 0.8;
+    }
+    .prose ul, .prose ol {
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+      color: var(--c-muted);
+    }
+    .prose li {
+      margin-bottom: 0.5rem;
+      line-height: 1.75;
+    }
+    .prose li strong {
+      color: var(--c-txt);
+    }
+    .prose hr {
+      border: none;
+      height: 1px;
+      background: linear-gradient(to right, var(--c-accent), var(--c-border), transparent);
+      margin: 3rem 0;
+      opacity: 0.5;
+    }
+    .prose blockquote {
+      border-left: 3px solid var(--c-accent);
+      background: var(--c-card);
+      border-radius: 0 12px 12px 0;
+      padding: 1.25rem 1.5rem;
+      margin: 2rem 0;
+      font-style: italic;
+      color: var(--c-muted);
+    }
+    .prose blockquote p:last-child {
+      margin-bottom: 0;
+    }
+    .prose code {
+      background: var(--c-card);
+      border: 1px solid var(--c-border);
+      padding: 0.15em 0.4em;
+      border-radius: 6px;
+      font-size: 0.875em;
+    }
+    .prose pre {
+      background: var(--c-card);
+      border: 1px solid var(--c-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      overflow-x: auto;
+    }
+    .prose pre code {
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .prose thead, .prose tbody, .prose tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+    .prose th {
+      background: var(--c-card);
+      border: 1px solid var(--c-border);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--c-txt);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .prose td {
+      border: 1px solid var(--c-border);
+      padding: 0.75rem 1rem;
+      color: var(--c-muted);
+      vertical-align: top;
+    }
+    .prose td strong {
+      color: var(--c-txt);
+    }
+    .prose tbody tr:hover {
+      background: var(--c-card);
+    }
+    @media (max-width: 640px) {
+      .prose h2 { font-size: 1.15rem; margin-top: 1.5rem; }
+      .prose h3 { font-size: 0.95rem; }
+      .prose blockquote { padding: 1rem 1.25rem; }
+      .prose thead, .prose tbody, .prose tr { display: table; table-layout: fixed; min-width: 480px; }
+      .prose th, .prose td { padding: 0.6rem 0.75rem; font-size: 0.82rem; }
+    }
+  </style>
+</head>
+<body class="grain">
+
+  <nav class="fixed top-0 left-0 right-0 z-50 nav-blur bg-bg/80 border-b border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="/" class="font-heading text-lg font-semibold text-txt hover:text-accent transition-colors">Лев Ом</a>
+      <div class="flex items-center gap-3 sm:gap-5">
+        <a href="/blog.html" class="hidden sm:block text-sm text-muted hover:text-txt transition-colors">Блог</a>
+        <a href="/consultations.html" class="hidden sm:block text-sm text-muted hover:text-txt transition-colors">Консультации</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+          <div class="theme-toggle-thumb">
+            <svg class="theme-toggle-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+            <svg class="theme-toggle-icon icon-sun" viewBox="0 0 24 24"><path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm0-16v2m0 12v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+          </div>
+        </button>
+        <a href="/ai-agents.html" class="hidden sm:inline-flex text-sm font-semibold bg-accent px-4 py-2 rounded-lg btn-accent">Консультация</a>
+        <button id="menuToggle" class="sm:hidden w-10 h-10 flex items-center justify-center text-txt" aria-label="Меню">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line class="menu-icon-line" x1="3" y1="6" x2="21" y2="6"/>
+            <line class="menu-icon-line" x1="3" y1="12" x2="21" y2="12"/>
+            <line class="menu-icon-line" x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="mobileMenu" class="mobile-menu">
+    <a href="/blog.html" class="text-base text-txt font-medium hover:text-accent transition-colors py-3">Блог</a>
+    <a href="/consultations.html" class="text-base text-txt font-medium hover:text-accent transition-colors py-3">Консультации</a>
+    <a href="/ai-agents.html" class="bg-accent font-semibold px-6 py-3.5 rounded-xl text-sm btn-accent text-center mt-2">Консультация по AI-агентам →</a>
+  </div>
+
+  <!-- ARTICLE -->
+  <article class="pt-32 sm:pt-40 pb-16 sm:pb-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <div class="fade-in">
+        <!-- Back link -->
+        <a href="/blog.html" class="inline-flex items-center gap-2 text-sm text-muted hover:text-accent transition-colors mb-8">
+          &larr; Все статьи
+        </a>
+
+        <!-- Meta -->
+        <div class="flex items-center gap-2 mb-6">
+          <span class="text-sm text-muted">27 февраля 2026</span>
+          <span class="text-muted">·</span> <span class="text-xs text-accent bg-accent/10 px-2.5 py-0.5 rounded-full">блог</span> <span class="text-xs text-accent bg-accent/10 px-2.5 py-0.5 rounded-full">ai</span> <span class="text-xs text-accent bg-accent/10 px-2.5 py-0.5 rounded-full">автоматизация</span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="font-heading text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-10">
+          Полуавтоматический блог: как я веду сайт, не открывая редактор
+        </h1>
+      </div>
+
+      <!-- Content -->
+      <div class="fade-in prose">
+        <p>Я не люблю писать. Точнее, не люблю процесс: открыть редактор, придумать структуру, перечитать три раза, поправить заголовки, залить на хостинг. Каждый шаг по отдельности мелкий, но вместе они превращают одну статью в вечер потраченного времени. Поэтому блоги у меня умирали. Раз за разом.</p>
+<p>Сейчас всё работает иначе. Я говорю, о чём хочу написать, уточняю детали, читаю готовый текст, правлю если нужно. Статья появляется на сайте через минуты. Этот пост написан именно так.</p>
+<hr>
+<h2>Что поменялось</h2>
+<p>Раньше блог был набором действий: напиши, отформатируй, загрузи, опубликуй. Сейчас блог стал конвейером с чёткими этапами, где каждый этап делает тот, кто справляется лучше.</p>
+<p>AI хорошо ищет информацию, собирает структуру и генерирует черновик. Я хорошо задаю направление, чувствую тон и решаю, что публиковать. Когда эти роли разделены, получается быстро и при этом живо.</p>
+<p>Ключевое слово здесь: полуавтоматический. Не «AI пишет за меня». Не «я пишу сам с нуля». Гибрид, где мои мысли проходят через усилитель.</p>
+<hr>
+<h2>Принципы, на которых это держится</h2>
+<h3>Статья это файл, не запись в админке</h3>
+<p>Каждый пост хранится как обычный текстовый файл. Никаких баз данных, никаких веб-редакторов, никаких паролей от панели управления. Файл лежит в папке рядом с другими файлами. Чтобы опубликовать, достаточно положить новый файл в нужное место.</p>
+<p>Звучит примитивно, но именно эта простота делает автоматизацию возможной. Когда пост есть файл, любой инструмент может его создать, отредактировать или опубликовать. Не нужно разбираться с API какой-нибудь платформы или ковыряться в чужих формах.</p>
+<h3>Конвейер вместо творческого хаоса</h3>
+<p>Процесс создания статьи разбит на фазы, и каждая фаза делает ровно одно действие:</p>
+<ol>
+<li><strong>Тема и направление.</strong> Я формулирую, о чём хочу рассказать. Иногда одним предложением, иногда подробнее.</li>
+<li><strong>Исследование.</strong> AI ищет свежую фактуру по теме, чтобы статья опиралась на реальность, а не на мои фантазии.</li>
+<li><strong>Черновик.</strong> На основе моих вводных и найденной информации собирается текст.</li>
+<li><strong>Чистка.</strong> Убираются типичные «роботные» обороты: канцелярит, пассивный залог, абстракции вместо конкретики.</li>
+<li><strong>Публикация.</strong> Файл сохраняется, сайт пересобирается, статья на месте.</li>
+</ol>
+<p>Каждый этап можно остановить, откатить, переделать. Но обычно процесс идёт от начала до конца за один подход.</p>
+<h3>Голос автора зашит в правила</h3>
+<p>Самое интересное. У моего конвейера есть набор правил, которые описывают, как я пишу. Какие слова использую, каких избегаю. Какая структура у статей. Какой длины абзацы. Как выглядит призыв к действию в конце.</p>
+<p>Эти правила работают как фильтр: AI генерирует текст, а потом прогоняет его через мои требования. Если получилось «в современном мире становится очевидным», правила это поймают и заставят переписать нормальным языком.</p>
+<p>Получается парадоксальная штука: чем точнее я описал свой стиль, тем меньше мне нужно править руками. AI не угадывает, как я говорю. Он следует инструкции.</p>
+<h3>Сайт обновляется сам</h3>
+<p>После добавления нового файла сайт автоматически пересобирается и обновляется. Я не захожу ни в какую панель, не нажимаю кнопку «опубликовать». Положил файл, и через пару минут статья живёт по своему адресу.</p>
+<p>Такой подход убирает последний барьер. Знаете ощущение, когда текст готов, но вы откладываете публикацию? «Завтра перечитаю ещё раз», «надо картинку подобрать», «потом залью». С автоматической публикацией этих отговорок нет. Написал, проверил, опубликовал.</p>
+<hr>
+<h2>Что даёт человеческий фактор</h2>
+<p>Можно спросить: зачем вообще человек, если конвейер автоматический? Всё просто: без меня получается мёртвый текст.</p>
+<p>AI не знает, что меня бесит, когда подрядчик три месяца «почти доделал». Не знает, что у меня есть привычка объяснять сложное через бытовые аналогии. Не знает, что на прошлой неделе я провёл созвон, который натолкнул на мысль для статьи.</p>
+<p>Мой вклад в каждый пост:</p>
+<ul>
+<li><strong>Тема.</strong> Я решаю, о чём писать. Не алгоритм, не SEO-подсказки, а мой личный опыт и наблюдения.</li>
+<li><strong>Фильтрация.</strong> Я читаю черновик и вычёркиваю то, что не стал бы говорить вслух.</li>
+<li><strong>Тон.</strong> Иногда достаточно одной правки, чтобы абзац перестал звучать как инструкция и зазвучал как разговор.</li>
+<li><strong>Решение о публикации.</strong> Если текст не нравится, он не выходит. Никакого «ну ладно, сойдёт».</li>
+</ul>
+<p>Полуавтоматический блог не исключает автора. Он освобождает автора от рутины, чтобы тот занимался тем, что умеет: думал, выбирал, решал.</p>
+<hr>
+<h2>Почему это лучше, чем «просто писать самому»</h2>
+<p>Я пробовал вести блог классическим способом. Много раз. Каждый раз одно и то же: пишу три статьи на энтузиазме, потом забрасываю на месяцы. Не потому что нечего сказать, а потому что процесс слишком тяжёлый для регулярности.</p>
+<p>Полуавтоматический подход решает именно эту проблему. Он снижает порог входа до «расскажи, о чём хочешь написать». Когда между идеей и публикацией не три часа работы, а пятнадцать минут разговора с конвейером, писать хочется чаще.</p>
+<p>За последний месяц на этом сайте появилось четыре статьи. Для человека, который раньше бросал блоги после третьего поста, это прорыв.</p>
+<hr>
+<h2>Почему это лучше, чем «пусть AI пишет всё сам»</h2>
+<p>Полностью автоматические блоги существуют. Можно настроить систему, которая каждый день генерирует статью по заданным ключевым словам и публикует без участия человека. Я видел такие сайты. Их видно за километр.</p>
+<p>Тексты технически грамотные, но пустые. Нет позиции, нет опыта, нет историй из практики. Нет ничего, ради чего стоит читать. Поисковики уже научились отличать такой контент, а читатели научились ещё раньше.</p>
+<p>Мой подход держится на том, что каждая статья проходит через живого человека. Не как формальность, а как ключевой этап. Я выбираю тему, потому что она мне интересна или важна. Я проверяю текст, потому что подписываюсь под ним своим именем.</p>
+<hr>
+<h2>Частые вопросы</h2>
+<h3>Это не обман читателей, если текст генерирует AI?</h3>
+<p>Нет. AI помогает с черновиком, как калькулятор помогает с расчётами. Финальный текст прошёл через меня: я выбрал тему, проверил факты, убрал лишнее, добавил свой опыт. Авторство определяется не тем, кто набирал буквы, а тем, чьи мысли и решения стоят за текстом.</p>
+<h3>Сколько времени занимает одна статья?</h3>
+<p>От идеи до публикации: 15-30 минут. Из них мои активные действия: сформулировать тему (пара предложений), прочитать и поправить черновик (5-10 минут). Раньше статья занимала 2-3 часа чистого времени.</p>
+<h3>Можно так настроить для своего блога?</h3>
+<p>Можно. Принципы универсальные: текст как файл, конвейер из этапов, правила стиля, автоматический деплой. Конкретная реализация зависит от ваших инструментов и предпочтений.</p>
+<hr>
+<h2>Итог</h2>
+<p>Я нашёл способ вести блог, который работает именно для меня: ленивого перфекциониста, который хочет делиться мыслями, но ненавидит рутину публикации. Полуавтоматический конвейер берёт на себя всё, что можно автоматизировать, и оставляет мне то, что автоматизировать нельзя: выбор темы, проверку тона, решение «публикуем или нет».</p>
+<p>Блог перестал быть обузой. Он стал инструментом, которым приятно пользоваться.</p>
+<hr>
+<h2>Хотите разобраться в своей ситуации?</h2>
+<p>На часовой консультации разберём вашу задачу:</p>
+<ul>
+<li><strong>Оценка</strong> — что реально работает, а что маркетинг</li>
+<li><strong>План</strong> — какие инструменты нужны и как их связать</li>
+<li><strong>Бюджет</strong> — точные цифры: сервер, API, подписки</li>
+</ul>
+<p>60 минут, онлайн, <strong>$130</strong>.</p>
+<p><a href="/ai-agents.html">Записаться на консультацию</a></p>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- CTA -->
+  <section class="py-20 sm:py-28">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+      <div class="fade-in">
+        <h2 class="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold mb-6">
+          Хотите внедрить<br><span class="text-accent">AI в свой бизнес?</span>
+        </h2>
+        <p class="text-muted mb-10 max-w-lg mx-auto">Запишитесь на консультацию — разберём ваши процессы и составим план.</p>
+        <a href="/ai-agents.html" class="inline-flex items-center justify-center gap-2 bg-accent font-semibold px-8 py-4 rounded-xl text-base btn-accent">
+          Консультация по AI-агентам &rarr;
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-border py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+        <a href="/" class="font-heading text-lg font-semibold text-txt hover:text-accent transition-colors">Лев Ом</a>
+        <div class="flex items-center gap-6 flex-wrap justify-center">
+          <a href="/blog.html" class="text-sm text-muted hover:text-txt transition-colors">Блог</a>
+          <a href="/consultations.html" class="text-sm text-muted hover:text-txt transition-colors">Консультации</a>
+          <a href="https://t.me/omelnickiy_ai" target="_blank" rel="noopener" class="text-sm text-muted hover:text-txt transition-colors">Telegram</a>
+          <a href="https://www.instagram.com/omelnickiy_ai/" target="_blank" rel="noopener" class="text-sm text-muted hover:text-txt transition-colors">Instagram</a>
+          <a href="https://sintez.agency" target="_blank" rel="noopener" class="text-sm text-muted hover:text-txt transition-colors">SINTEZ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      const html = document.documentElement;
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light') {
+        html.classList.add('light');
+        html.style.background = '#3a3a36';
+      } else {
+        html.style.background = '#0a0a0a';
+      }
+    })();
+
+    document.getElementById('themeToggle').addEventListener('click', function() {
+      const html = document.documentElement;
+      html.classList.toggle('light');
+      const isLight = html.classList.contains('light');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      html.style.background = isLight ? '#3a3a36' : '#0a0a0a';
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Mobile menu
+    (function() {
+      var toggle = document.getElementById('menuToggle');
+      var menu = document.getElementById('mobileMenu');
+      if (!toggle || !menu) return;
+      toggle.addEventListener('click', function() {
+        var isOpen = menu.classList.toggle('open');
+        toggle.classList.toggle('menu-open', isOpen);
+      });
+      menu.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() {
+          menu.classList.remove('open');
+          toggle.classList.remove('menu-open');
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>
