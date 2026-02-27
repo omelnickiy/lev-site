@@ -587,13 +587,13 @@ function ogTags(post) {
 
 function postCard(post) {
   const tagsHtml = Array.isArray(post.meta.tags)
-    ? post.meta.tags.map(t => `<span class="text-xs text-accent bg-accent/10 px-2.5 py-0.5 rounded-full">${t}</span>`).join(' ')
+    ? post.meta.tags.slice(0, 5).map(t => `<span class="text-xs text-accent bg-accent/10 px-2.5 py-0.5 rounded-full whitespace-nowrap">${t}</span>`).join(' ')
     : '';
 
   return `<a href="/blog/${post.slug}.html" class="fade-in bg-card border border-border rounded-2xl p-6 sm:p-8 card-hover block group">
-          <div class="flex items-center gap-2 mb-4">
-            <span class="text-xs text-muted">${formatDate(post.meta.date)}</span>
-            ${tagsHtml ? `<span class="text-muted">·</span> ${tagsHtml}` : ''}
+          <div class="mb-4">
+            <span class="text-xs text-muted block mb-2">${formatDate(post.meta.date)}</span>
+            ${tagsHtml ? `<div class="flex items-center gap-2 flex-wrap">${tagsHtml}</div>` : ''}
           </div>
           <h3 class="font-heading text-base sm:text-lg font-semibold mb-3 group-hover:text-accent transition-colors">${post.meta.title}</h3>
           <p class="text-sm text-muted leading-relaxed">${post.meta.description || ''}</p>
