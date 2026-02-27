@@ -590,7 +590,7 @@ function postCard(post) {
     ? post.meta.tags.slice(0, 5).map(t => `<span class="text-xs text-accent bg-accent/10 px-2.5 py-0.5 rounded-full whitespace-nowrap">${t}</span>`).join(' ')
     : '';
 
-  return `<a href="/blog/${post.slug}.html" class="fade-in bg-card border border-border rounded-2xl p-6 sm:p-8 card-hover block group">
+  return `<a href="/blog/${post.slug}.html" class="fade-in bg-card border border-border rounded-2xl p-6 sm:p-8 card-hover block group overflow-hidden">
           <div class="mb-4">
             <span class="text-xs text-muted block mb-2">${formatDate(post.meta.date)}</span>
             ${tagsHtml ? `<div class="flex items-center gap-2 flex-wrap">${tagsHtml}</div>` : ''}
